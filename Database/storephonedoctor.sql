@@ -1,5 +1,3 @@
-CREATE DATABASE storephonedoctor;
-USE storephonedoctor;
 -- phpMyAdmin SQL Dump
 -- version 4.8.1
 -- https://www.phpmyadmin.net/
