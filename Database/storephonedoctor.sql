@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-10-2018 a las 17:25:02
+-- Tiempo de generación: 02-10-2018 a las 17:56:10
 -- Versión del servidor: 10.1.33-MariaDB
 -- Versión de PHP: 7.2.6
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `storephonedoctor`
 --
+CREATE DATABASE IF NOT EXISTS `storephonedoctor` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `storephonedoctor`;
 
 -- --------------------------------------------------------
 
@@ -55,6 +57,41 @@ INSERT INTO `clientes` (`USERNAME_CL`, `EMAIL_CL`, `CONTRASENA_CL`, `NOMBRE_CL`,
 ('Publico General', 'storephonedoctor@gmail.com', 'Publico General', 'Store', 'Phone', 'Doctor', '00000000', 'StorePhone Doctor'),
 ('Romeosantos', 'romeo@donomar.com', 'Romeosantos', 'Romeo', 'Omar', 'Santos', '7751234567', 'Cuautepec'),
 ('Wicho', 'hola@gmail.com', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 'Luis', 'Prz', 'Mtz', '7751236586', 'Tulancingo');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `garantias`
+--
+
+CREATE TABLE `garantias` (
+  `FOLIO_G` int(11) NOT NULL,
+  `CODIGO_P` varchar(13) NOT NULL,
+  `FECHA_G` varchar(15) NOT NULL,
+  `CANTIDAD_PG` int(11) NOT NULL,
+  `USERNAME_US` varchar(20) NOT NULL,
+  `DESCRIPCION_G` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `historial_ventas_p`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `historial_ventas_p` (
+`FOLIO_V` varchar(13)
+,`CODIGO_P` varchar(13)
+,`PRECIO_VP` double
+,`SUBTOTAL_VP` double
+,`CANTIDAD_VP` int(11)
+,`USERNAME_US` varchar(20)
+,`USERNAME_CL` varchar(50)
+,`FECHA_V` varchar(15)
+,`NOMBRE_P` varchar(50)
+,`CATEGORIA_P` varchar(30)
+,`MARCA_P` varchar(30)
+);
 
 -- --------------------------------------------------------
 
@@ -260,6 +297,15 @@ INSERT INTO `ventas_producto` (`ID_VP`, `FOLIO_V`, `CODIGO_P`, `PRECIO_VP`, `SUB
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `historial_ventas_p`
+--
+DROP TABLE IF EXISTS `historial_ventas_p`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `historial_ventas_p`  AS  select `ventas_producto`.`FOLIO_V` AS `FOLIO_V`,`ventas_producto`.`CODIGO_P` AS `CODIGO_P`,`ventas_producto`.`PRECIO_VP` AS `PRECIO_VP`,`ventas_producto`.`SUBTOTAL_VP` AS `SUBTOTAL_VP`,`ventas_producto`.`CANTIDAD_VP` AS `CANTIDAD_VP`,`ventas`.`USERNAME_US` AS `USERNAME_US`,`ventas`.`USERNAME_CL` AS `USERNAME_CL`,`ventas`.`FECHA_V` AS `FECHA_V`,`productos`.`NOMBRE_P` AS `NOMBRE_P`,`productos`.`CATEGORIA_P` AS `CATEGORIA_P`,`productos`.`MARCA_P` AS `MARCA_P` from ((`ventas_producto` join `ventas` on((`ventas_producto`.`FOLIO_V` = `ventas`.`FOLIO_V`))) join `productos` on((`ventas_producto`.`CODIGO_P` = `productos`.`CODIGO_P`))) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `inventario_no_admn`
 --
 DROP TABLE IF EXISTS `inventario_no_admn`;
@@ -293,6 +339,14 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`USERNAME_CL`);
+
+--
+-- Indices de la tabla `garantias`
+--
+ALTER TABLE `garantias`
+  ADD PRIMARY KEY (`FOLIO_G`),
+  ADD KEY `CODIGO_P_G` (`CODIGO_P`),
+  ADD KEY `USERNAME_US_G` (`USERNAME_US`);
 
 --
 -- Indices de la tabla `productos`
@@ -336,6 +390,12 @@ ALTER TABLE `ventas_producto`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `garantias`
+--
+ALTER TABLE `garantias`
+  MODIFY `FOLIO_G` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `ventas_producto`
 --
 ALTER TABLE `ventas_producto`
@@ -344,6 +404,13 @@ ALTER TABLE `ventas_producto`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `garantias`
+--
+ALTER TABLE `garantias`
+  ADD CONSTRAINT `CODIGO_P_G` FOREIGN KEY (`CODIGO_P`) REFERENCES `productos` (`CODIGO_P`),
+  ADD CONSTRAINT `USERNAME_US_G` FOREIGN KEY (`USERNAME_US`) REFERENCES `usuarios` (`USERNAME_US`);
 
 --
 -- Filtros para la tabla `servicios`
